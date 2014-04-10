@@ -14,7 +14,7 @@ In your `:dev` profile, add dependencies on:
 
 ```clj
 [com.palletops/crates "0.1.2-SNAPSHOT"]
-[com.palletops/pallet-test-env "0.1.0"]
+[com.palletops/pallet-test-env "0.1.1"]
 ```
 
 Add the plugin to your `:plugins`.  The plugin provides several
