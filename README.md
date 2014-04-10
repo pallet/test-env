@@ -13,8 +13,7 @@ Writes results to `test-results.edn`.
 In your `:dev` profile, add dependencies on:
 
 ```clj
-[com.palletops/crates "0.1.2-SNAPSHOT"]
-[com.palletops/pallet-test-env "0.1.1"]
+[com.palletops/pallet-test-env "0.1.2"]
 ```
 
 Add the plugin to your `:plugins`.  The plugin provides several
@@ -22,7 +21,7 @@ profiles for different providers.  You can list the profiles with
 `lein test-env`.
 
 ```clj
-[com.palletops/lein-test-env "0.1.1"]
+[com.palletops/lein-test-env "0.1.2"]
 ```
 
 The environment uses `project.clj` for configuration, so we need to

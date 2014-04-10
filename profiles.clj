@@ -1,7 +1,8 @@
 {:provided {:dependencies [[org.clojure/clojure _]]}
  :dev {:plugins [[lein-pallet-release "RELEASE"]
                  [lein-modules "0.2.1"]]
-       :modules {:versions {org.clojure/clojure "1.5.1"}}
+       :modules {:versions {org.clojure/clojure "1.5.1"}
+                 :subprocess false}
        :pallet-release
        {:url "https://pbors:${GH_TOKEN}@github.com/pallet/test-env.git",
         :branch "master"}}
