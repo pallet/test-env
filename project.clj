@@ -1,4 +1,4 @@
-(defproject com.palletops/pallet-test-env "0.1.0"
+(defproject com.palletops/pallet-test-env "0.1.1-SNAPSHOT"
   :description "Test environment for pallet tests"
   :url "https://github.com/pallet/test-env"
   :license {:name "Eclipse Public License"
