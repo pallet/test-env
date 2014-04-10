@@ -6,5 +6,4 @@
   :scm {:url "git@github.com:pallet/pallet.git"}
   :dependencies [[com.palletops/multi-test "0.1.0"]
                  [com.palletops/crates "RELEASE"]
-                 [clj-time "0.6.0"]]
-  :parent [com.palletops/pallet-test-env-parent _ :relative-path "../pom.xml"])
+                 [clj-time "0.6.0"]])
