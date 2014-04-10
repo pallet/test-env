@@ -4,4 +4,5 @@
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :eval-in-leiningen true
-  :dependencies [[configleaf "0.4.6"]])
+  :dependencies [[configleaf "0.4.6"]]
+  :exclusions [org.clojure/clojure])
