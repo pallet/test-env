@@ -1,6 +1,7 @@
 # test-env
 
-Provides a way for testing pallet crates against a defined set of images.
+Provides a way for testing pallet crates against a defined set of
+images, and reporting which features are supported on each image.
 
 Uses [multi-test][multi-test] to run `clojure.test` tests multiple
 times with different bindings for `*compute-service*` and
@@ -56,8 +57,11 @@ Write tests annotated with `^:support`, which use `*compute-service*` and
 ## Configuration
 
 Add profiles with pallet provider dependencies for the providers you
-wish to test against.  In each of these profiles add a
-`:pallet/test-env` configuration map:
+wish to test against. The `:aws`, `:vmfest` and `:jclouds` profiles
+are provided by the plugin, using a `:service` of `:test-env-aws`,
+`:test-env-vmfest` and `:test-env-jclouds` respectively.
+
+In each of these profiles add a `:pallet/test-env` configuration map:
 
 ```
 :pallet/test-env {:service :ec2
