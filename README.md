@@ -81,6 +81,13 @@ exception, which can be declared as expected.
 lein with-profile +vmfest test :support
 ```
 
+## Controlling Teardown of Nodes
+
+The `teardown` form can be used to control the teardown of nodes in
+tests.  Any code block wrapped in this form will not be run when the
+`:no-teardown` profile is used.
+
+
 ## License
 
 Copyright © 2014 Hugo Duncan

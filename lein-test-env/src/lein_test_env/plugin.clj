@@ -25,7 +25,11 @@
                          [org.slf4j/jcl-over-slf4j "1.7.6"]]
          :pallet/test-env {:service :test-env-aws}}
    :vmfest {:dependencies '[[com.palletops/pallet-vmfest "0.4.0-alpha.1"]]
-            :pallet/test-env {:service :test-env-vmfest}}})
+            :pallet/test-env {:service :test-env-vmfest}}
+   :no-teardown {; :global-vars {'pallet.test-env/*teardown* :never}
+                 :injections '[(require 'pallet.test-env)
+                               (alter-var-root #'pallet.test-env/*teardown*
+                                               (constantly :never))]}})
 
 (defn deep-merge
   "Recursively merge maps."
