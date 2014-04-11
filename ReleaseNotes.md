@@ -1,3 +1,9 @@
+## 0.1.4
+
+- Add teardown form and :no-teardown profile
+  When using the :no-teardown profile, any code wrapped in the teardown form
+  is not executed.
+
 ## 0.1.3
 
 - Update to pallet-aws 0.2.1
@@ -13,7 +19,7 @@
 - Remove the :parent in project.clj
 
 - pallet-test-env depends on com.palletops/crates
-  Uses the RELEASE version specification so latest image defintions are 
+  Uses the RELEASE version specification so latest image defintions are
   always picked up.
 
 - Update default service names

@@ -1,6 +1,7 @@
 # test-env
 
-Provides a way for testing pallet crates against a defined set of images.
+Provides a way for testing pallet crates against a defined set of
+images, and reporting which features are supported on each image.
 
 Uses [multi-test][multi-test] to run `clojure.test` tests multiple
 times with different bindings for `*compute-service*` and
@@ -13,7 +14,7 @@ Writes results to `test-results.edn`.
 In your `:dev` profile, add dependencies on:
 
 ```clj
-[com.palletops/pallet-test-env "0.1.3"]
+[com.palletops/pallet-test-env "0.1.4"]
 ```
 
 Add the plugin to your `:plugins`.  The plugin provides several
@@ -21,7 +22,7 @@ profiles for different providers.  You can list the profiles with
 `lein test-env`.
 
 ```clj
-[com.palletops/lein-test-env "0.1.3"]
+[com.palletops/lein-test-env "0.1.4"]
 ```
 
 The environment uses `project.clj` for configuration, so we need to
@@ -56,8 +57,11 @@ Write tests annotated with `^:support`, which use `*compute-service*` and
 ## Configuration
 
 Add profiles with pallet provider dependencies for the providers you
-wish to test against.  In each of these profiles add a
-`:pallet/test-env` configuration map:
+wish to test against. The `:aws`, `:vmfest` and `:jclouds` profiles
+are provided by the plugin, using a `:service` of `:test-env-aws`,
+`:test-env-vmfest` and `:test-env-jclouds` respectively.
+
+In each of these profiles add a `:pallet/test-env` configuration map:
 
 ```
 :pallet/test-env {:service :ec2
@@ -76,6 +80,13 @@ exception, which can be declared as expected.
 ```
 lein with-profile +vmfest test :support
 ```
+
+## Controlling Teardown of Nodes
+
+The `teardown` form can be used to control the teardown of nodes in
+tests.  Any code block wrapped in this form will not be run when the
+`:no-teardown` profile is used.
+
 
 ## License
 

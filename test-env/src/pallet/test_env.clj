@@ -275,6 +275,7 @@ over a sequence of node-specs.  The node-spec is available in tests as
           nsm (cond->> mns
                        (seq selectors) (filter
                                         #(matches-selectors? selectors %)))]
+      (assert service (str "No valid compute-service found for " (pr-str cs)))
       (assert (every? :selector mns)
               "Every mns must have a selector")
       (assert (every? :selector nsm)
@@ -315,3 +316,16 @@ over a sequence of node-specs.  The node-spec is available in tests as
      (test-env* node-spec-metas project-map options))
   ([node-spec-metas project-map]
      (test-env* node-spec-metas project-map {})))
+
+(def ^:dynamic *teardown*
+  "Control execution of teardown blocks."
+  :always)
+
+(defmacro teardown
+  "A macro to wrap teardown of nodes in test-env tests.  The execution
+  of the body is controlled by the *teardown* var.  If set
+  to :never, the body will not be run.  If set to :always, the default,
+  it will always be run."
+  [& body]
+  `(when (= :always *teardown*)
+     ~@body))
