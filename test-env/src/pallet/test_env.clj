@@ -12,6 +12,7 @@ over a sequence of node-specs.  The node-spec is available in tests as
    [clj-time.core :refer [now]]
    [clj-time.format :refer [formatters unparse]]
    [clojure.java.io :as io]
+   [clojure.pprint :refer [pprint]]
    [clojure.set :refer [intersection]]
    [clojure.test :as test]
    [com.palletops.multi-test :as multi-test]
@@ -91,11 +92,13 @@ over a sequence of node-specs.  The node-spec is available in tests as
     (name (first kws)) (map name (rest kws)))))
 
 (defn format-tests
- "Convert test results into a format for output."
- [results untested]
- (pr-str {:results (process-results results)
-          :date (unparse (formatters :basic-date-time) (now))
-          :untested (map (comp longest-kw :selectors) untested)}))
+  "Convert test results into a format for output."
+  [results untested]
+  (with-out-str
+    (binding [*print-readably* true]
+      (pprint {:results (process-results results)
+               :date (unparse (formatters :basic-date-time) (now))
+               :untested (map (comp longest-kw :selectors) untested)}))))
 
 (defn output-results
   [results untested output-file]
