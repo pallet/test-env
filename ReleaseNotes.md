@@ -1,3 +1,13 @@
+## 0.1.3
+
+- Update to pallet-aws 0.2.1
+
+- Upgrade to lein-modules 0.2.2
+
+- Workaround for add-profiles bug
+  The bug is present in lein 2.3.4 and earlier.  The fix should be redundant
+  on the next lein release.
+
 ## 0.1.2
 
 - Remove the :parent in project.clj
