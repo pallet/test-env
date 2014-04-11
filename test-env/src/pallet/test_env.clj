@@ -305,7 +305,8 @@ over a sequence of node-specs.  The node-spec is available in tests as
   [node-spec-metas project-map options]
   `(defn ~'test-ns-hook []
      (test-ns-with-env
-      '~(ns-name *ns*) ~node-spec-metas ~project-map ~options)))
+      '~(ns-name *ns*) ~node-spec-metas ~project-map
+      (merge {:thread (or (System/getenv "TEST_ENV_THREAD") 1)} ~options))))
 
 (defmacro test-env
   "Declare a test environment for clojure.test tests.

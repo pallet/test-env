@@ -81,12 +81,15 @@ exception, which can be declared as expected.
 lein with-profile +vmfest test :support
 ```
 
+The `TEST_ENV_THREAD` environment variable can be used to set the
+number of test threads (defaults to 1).
+
+
 ## Controlling Teardown of Nodes
 
 The `teardown` form can be used to control the teardown of nodes in
 tests.  Any code block wrapped in this form will not be run when the
 `:no-teardown` profile is used.
-
 
 ## License
 
