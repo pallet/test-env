@@ -84,6 +84,8 @@ lein with-profile +vmfest test :support
 The `TEST_ENV_THREAD` environment variable can be used to set the
 number of test threads (defaults to 1).
 
+The `unique-name` function can be used to generate a name based on the
+current test and the current selector.
 
 ## Controlling Teardown of Nodes
 

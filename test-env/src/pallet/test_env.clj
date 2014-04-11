@@ -349,3 +349,11 @@ over a sequence of node-specs.  The node-spec is available in tests as
   [& body]
   `(when (= :always *startup*)
      ~@body))
+
+(defn unique-name
+  "Generate a name that is unique to the test and the selector."
+  []
+  (let [v (first test/*testing-vars*)
+        vname (if v (-> v meta :name) "test")
+        selector (:selector *node-spec-meta*)]
+    (str vname "-" (name selector))))
