@@ -321,6 +321,9 @@ over a sequence of node-specs.  The node-spec is available in tests as
   ([node-spec-metas project-map]
      (test-env* node-spec-metas project-map {})))
 
+
+;;; # Controlling Parts of Tests that are Run
+
 (def ^:dynamic *teardown*
   "Control execution of teardown blocks."
   :always)
@@ -332,4 +335,17 @@ over a sequence of node-specs.  The node-spec is available in tests as
   it will always be run."
   [& body]
   `(when (= :always *teardown*)
+     ~@body))
+
+(def ^:dynamic *startup*
+  "Control execution of startup blocks."
+  :always)
+
+(defmacro startup
+  "A macro to wrap startup of nodes in test-env tests.  The execution
+  of the body is controlled by the *startup* var.  If set
+  to :never, the body will not be run.  If set to :always, the default,
+  it will always be run."
+  [& body]
+  `(when (= :always *startup*)
      ~@body))

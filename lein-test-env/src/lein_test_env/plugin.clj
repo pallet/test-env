@@ -26,10 +26,14 @@
          :pallet/test-env {:service :test-env-aws}}
    :vmfest {:dependencies '[[com.palletops/pallet-vmfest "0.4.0-alpha.1"]]
             :pallet/test-env {:service :test-env-vmfest}}
-   :no-teardown {; :global-vars {'pallet.test-env/*teardown* :never}
+   :no-teardown {  ; :global-vars {'pallet.test-env/*teardown* :never}
                  :injections '[(require 'pallet.test-env)
                                (alter-var-root #'pallet.test-env/*teardown*
-                                               (constantly :never))]}})
+                                               (constantly :never))]}
+   :no-startup {    ; :global-vars {'pallet.test-env/*startup* :never}
+                :injections '[(require 'pallet.test-env)
+                              (alter-var-root #'pallet.test-env/*startup*
+                                              (constantly :never))]}})
 
 (defn deep-merge
   "Recursively merge maps."
