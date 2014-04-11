@@ -1,6 +1,6 @@
 {:provided {:dependencies [[org.clojure/clojure _]]}
  :dev {:plugins [[lein-pallet-release "RELEASE"]
-                 [lein-modules "0.2.1"]]
+                 [lein-modules "0.2.2"]]
        :modules {:versions {org.clojure/clojure "1.5.1"}
                  :subprocess false}
        :pallet-release
