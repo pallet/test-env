@@ -330,11 +330,14 @@ over a sequence of node-specs.  The node-spec is available in tests as
 
 (defmacro teardown
   "A macro to wrap teardown of nodes in test-env tests.  The execution
-  of the body is controlled by the *teardown* var.  If set
-  to :never, the body will not be run.  If set to :always, the default,
-  it will always be run."
+  of the body is controlled by the *teardown* var.  If set to :never,
+  the body will not be run.  If set to :always, the default, it will
+  always be run.  If set to :on-success, will only run if
+  multi-test/test-var-has-failures? returns false."
   [& body]
-  `(when (= :always *teardown*)
+  `(when (or (= :always *teardown*)
+             (and (= :on-success *teardown*)
+                  (not (multi-test/test-var-has-failures?))))
      ~@body))
 
 (def ^:dynamic *startup*
