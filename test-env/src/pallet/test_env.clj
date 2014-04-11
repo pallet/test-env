@@ -258,6 +258,8 @@ over a sequence of node-specs.  The node-spec is available in tests as
   (assert (map? project-map) "project-map not specified as a map")
   (let [config (and project-map (config-from-project project-map))
         test-specs (:test-specs config)]
+    (assert (map? config)
+            "Must have a :pallet/test-env configuration")
     (assert (every? :selector test-specs)
             "Every test-spec must have a selector")
     (let [cs (compute-service config)

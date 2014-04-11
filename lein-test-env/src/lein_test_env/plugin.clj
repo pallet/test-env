@@ -45,10 +45,12 @@
 (defn middleware
   "Middleware to add test-env profiles, and activate :pallet/test-env."
   [project]
-  (->
-   project
-   (add-profiles (deep-merge profiles (test-env-profiles project)))
-   (merge-project (merge configleaf test-selectors))))
+  (let [profiles (deep-merge profiles (test-env-profiles project))]
+    (->
+     project
+     (add-profiles profiles)
+     (vary-meta update-in [:profiles] merge profiles)
+     (merge-project (merge configleaf test-selectors)))))
 
 (defn hooks
   []
