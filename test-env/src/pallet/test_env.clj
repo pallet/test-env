@@ -353,6 +353,35 @@ over a sequence of node-specs.  The node-spec is available in tests as
   `(when (= :always *startup*)
      ~@body))
 
+(defmacro with-group-spec
+  "Wrap a test that requires the specified group-spec.  Wraps node creation
+  in `startup` and node teardown in `teardown`.  Adds exception handling to
+  ensure teardown occurs correctly.  You must require pallet.api for this
+  to expand correctly."
+  [spec & body]
+  `(let [spec# ~spec]
+     (try
+       (startup
+        (let [session# (pallet.api/converge
+                        (merge {:count 1} spec#)
+                        :phase [:bootstrap]
+                        :compute *compute-service*)]
+          (clojure.test/testing "bootstrap"
+            (clojure.test/is
+             session#)
+            (clojure.test/is
+             (not (pallet.core.api/phase-errors session#))))))
+       ~@body
+       (catch Throwable e#
+         ;; add test so teardown triggers correctly
+         (clojure.test/is false "exception thrown")
+         (throw e#))
+       (finally
+         (teardown
+          (pallet.api/converge
+           (assoc spec# :count 0)
+           :compute *compute-service*))))))
+
 (defn unique-name
   "Generate a name that is unique to the test and the selector."
   []
