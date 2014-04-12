@@ -30,6 +30,11 @@
                  :injections '[(require 'pallet.test-env)
                                (alter-var-root #'pallet.test-env/*teardown*
                                                (constantly :never))]}
+   :teardown-on-success { ; :global-vars {'pallet.test-env/*teardown* :never}
+                         :injections '[(require 'pallet.test-env)
+                                       (alter-var-root
+                                        #'pallet.test-env/*teardown*
+                                        (constantly :on-success))]}
    :no-startup {    ; :global-vars {'pallet.test-env/*startup* :never}
                 :injections '[(require 'pallet.test-env)
                               (alter-var-root #'pallet.test-env/*startup*

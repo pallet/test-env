@@ -91,7 +91,14 @@ current test and the current selector.
 
 The `teardown` form can be used to control the teardown of nodes in
 tests.  Any code block wrapped in this form will not be run when the
-`:no-teardown` profile is used.
+`:no-teardown` profile is used.  If the `:teardown-on-success` profile
+is active, then `teardown` will only be run if the test succeeds.
+
+The `startup` form can be used to control the startup of nodes in
+tests.  Any code block wrapped in this form will not be run when the
+`:no-startup` profile is used.  In combination with
+`:teardown-on-success`, this allows for repeated testing of failures
+on the same nodes.
 
 ## License
 
