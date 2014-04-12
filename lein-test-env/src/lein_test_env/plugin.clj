@@ -1,5 +1,6 @@
 (ns lein-test-env.plugin
   (:require
+   [leiningen.core.main :refer [debug]]
    [leiningen.core.project :refer [add-profiles merge-profiles]]
    [leiningen.test-env :refer [test-env-profiles]]
    [configleaf.hooks :as configleaf-hooks]))
@@ -58,6 +59,7 @@
 (defn middleware
   "Middleware to add test-env profiles, and activate :pallet/test-env."
   [project]
+  (debug "Loading test-env middleware")
   (let [profiles (deep-merge profiles (test-env-profiles project))]
     (->
      project
@@ -67,4 +69,5 @@
 
 (defn hooks
   []
+  (debug "Loading test-env hooks")
   (configleaf-hooks/activate))
