@@ -1,3 +1,35 @@
+## 0.1.5
+
+- Add with-group-spec macro to cut test boilerplate
+  The with-group-spec macro wraps a test that requires the specified 
+  group-spec. Node creation is put in a `startup` block and node teardown in
+  a `teardown` block.  Adds exception handling to ensure teardown occurs
+  correctly.
+
+- Add debug output to lein plugin
+
+- Add :teardown-on-success
+  Allow teardown of nodes only when a test succeeds.
+
+- Add unique-name to generate unique names
+  When naming groups in tests, using unique names allows tests to be run in
+  parallel.
+
+  Closes #5
+
+- Add startup form and :no-startup profile
+  The :no-startup profile can be used to control execution of any block 
+  wrapped in the startup form.
+
+- Use TEST_ENV_THREAD env var as thread count
+  When set, the TEST_ENV_THREAD specifies the number of threads to use for 
+  testing.  Defaults to 1.
+
+  Closes #4
+
+- pretty print test-results.edn
+  Closes #3
+
 ## 0.1.4
 
 - Add teardown form and :no-teardown profile

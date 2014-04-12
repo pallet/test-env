@@ -1,4 +1,4 @@
-(defproject com.palletops/lein-test-env "0.1.5-SNAPSHOT"
+(defproject com.palletops/lein-test-env "0.1.5"
   :description "Leiningen plugin to provide profiles for test-env"
   :url "https://github.com/pallet/test-env"
   :license {:name "Eclipse Public License"
