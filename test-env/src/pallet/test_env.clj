@@ -12,6 +12,7 @@ over a sequence of node-specs.  The node-spec is available in tests as
    [clj-time.core :refer [now]]
    [clj-time.format :refer [formatters unparse]]
    [clojure.java.io :as io]
+   [clojure.pprint :refer [pprint]]
    [clojure.set :refer [intersection]]
    [clojure.test :as test]
    [com.palletops.multi-test :as multi-test]
@@ -91,11 +92,13 @@ over a sequence of node-specs.  The node-spec is available in tests as
     (name (first kws)) (map name (rest kws)))))
 
 (defn format-tests
- "Convert test results into a format for output."
- [results untested]
- (pr-str {:results (process-results results)
-          :date (unparse (formatters :basic-date-time) (now))
-          :untested (map (comp longest-kw :selectors) untested)}))
+  "Convert test results into a format for output."
+  [results untested]
+  (with-out-str
+    (binding [*print-readably* true]
+      (pprint {:results (process-results results)
+               :date (unparse (formatters :basic-date-time) (now))
+               :untested (map (comp longest-kw :selectors) untested)}))))
 
 (defn output-results
   [results untested output-file]
@@ -302,7 +305,8 @@ over a sequence of node-specs.  The node-spec is available in tests as
   [node-spec-metas project-map options]
   `(defn ~'test-ns-hook []
      (test-ns-with-env
-      '~(ns-name *ns*) ~node-spec-metas ~project-map ~options)))
+      '~(ns-name *ns*) ~node-spec-metas ~project-map
+      (merge {:thread (or (System/getenv "TEST_ENV_THREAD") 1)} ~options))))
 
 (defmacro test-env
   "Declare a test environment for clojure.test tests.
@@ -317,15 +321,71 @@ over a sequence of node-specs.  The node-spec is available in tests as
   ([node-spec-metas project-map]
      (test-env* node-spec-metas project-map {})))
 
+
+;;; # Controlling Parts of Tests that are Run
+
 (def ^:dynamic *teardown*
   "Control execution of teardown blocks."
   :always)
 
 (defmacro teardown
   "A macro to wrap teardown of nodes in test-env tests.  The execution
-  of the body is controlled by the *teardown* var.  If set
+  of the body is controlled by the *teardown* var.  If set to :never,
+  the body will not be run.  If set to :always, the default, it will
+  always be run.  If set to :on-success, will only run if
+  multi-test/test-var-has-failures? returns false."
+  [& body]
+  `(when (or (= :always *teardown*)
+             (and (= :on-success *teardown*)
+                  (not (multi-test/test-var-has-failures?))))
+     ~@body))
+
+(def ^:dynamic *startup*
+  "Control execution of startup blocks."
+  :always)
+
+(defmacro startup
+  "A macro to wrap startup of nodes in test-env tests.  The execution
+  of the body is controlled by the *startup* var.  If set
   to :never, the body will not be run.  If set to :always, the default,
   it will always be run."
   [& body]
-  `(when (= :always *teardown*)
+  `(when (= :always *startup*)
      ~@body))
+
+(defmacro with-group-spec
+  "Wrap a test that requires the specified group-spec.  Wraps node creation
+  in `startup` and node teardown in `teardown`.  Adds exception handling to
+  ensure teardown occurs correctly.  You must require pallet.api for this
+  to expand correctly."
+  [spec & body]
+  `(let [spec# ~spec]
+     (try
+       (startup
+        (let [session# (pallet.api/converge
+                        (merge {:count 1} spec#)
+                        :phase [:bootstrap]
+                        :compute *compute-service*)]
+          (clojure.test/testing "bootstrap"
+            (clojure.test/is
+             session#)
+            (clojure.test/is
+             (not (pallet.core.api/phase-errors session#))))))
+       ~@body
+       (catch Throwable e#
+         ;; add test so teardown triggers correctly
+         (clojure.test/is false "exception thrown")
+         (throw e#))
+       (finally
+         (teardown
+          (pallet.api/converge
+           (assoc spec# :count 0)
+           :compute *compute-service*))))))
+
+(defn unique-name
+  "Generate a name that is unique to the test and the selector."
+  []
+  (let [v (first test/*testing-vars*)
+        vname (if v (-> v meta :name) "test")
+        selector (:selector *node-spec-meta*)]
+    (str vname "-" (name selector))))

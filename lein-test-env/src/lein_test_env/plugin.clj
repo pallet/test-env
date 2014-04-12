@@ -1,5 +1,6 @@
 (ns lein-test-env.plugin
   (:require
+   [leiningen.core.main :refer [debug]]
    [leiningen.core.project :refer [add-profiles merge-profiles]]
    [leiningen.test-env :refer [test-env-profiles]]
    [configleaf.hooks :as configleaf-hooks]))
@@ -26,10 +27,19 @@
          :pallet/test-env {:service :test-env-aws}}
    :vmfest {:dependencies '[[com.palletops/pallet-vmfest "0.4.0-alpha.1"]]
             :pallet/test-env {:service :test-env-vmfest}}
-   :no-teardown {; :global-vars {'pallet.test-env/*teardown* :never}
+   :no-teardown {  ; :global-vars {'pallet.test-env/*teardown* :never}
                  :injections '[(require 'pallet.test-env)
                                (alter-var-root #'pallet.test-env/*teardown*
-                                               (constantly :never))]}})
+                                               (constantly :never))]}
+   :teardown-on-success { ; :global-vars {'pallet.test-env/*teardown* :never}
+                         :injections '[(require 'pallet.test-env)
+                                       (alter-var-root
+                                        #'pallet.test-env/*teardown*
+                                        (constantly :on-success))]}
+   :no-startup {    ; :global-vars {'pallet.test-env/*startup* :never}
+                :injections '[(require 'pallet.test-env)
+                              (alter-var-root #'pallet.test-env/*startup*
+                                              (constantly :never))]}})
 
 (defn deep-merge
   "Recursively merge maps."
@@ -49,6 +59,7 @@
 (defn middleware
   "Middleware to add test-env profiles, and activate :pallet/test-env."
   [project]
+  (debug "Loading test-env middleware")
   (let [profiles (deep-merge profiles (test-env-profiles project))]
     (->
      project
@@ -58,4 +69,5 @@
 
 (defn hooks
   []
+  (debug "Loading test-env hooks")
   (configleaf-hooks/activate))

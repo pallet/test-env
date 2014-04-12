@@ -2,7 +2,8 @@
   (:require
    [clojure.test :refer :all]
    [pallet.compute :refer [compute-service?]]
-   [pallet.test-env :refer [test-env *node-spec-meta* *compute-service*]]))
+   [pallet.test-env :refer [test-env *node-spec-meta* *compute-service*
+                            unique-name]]))
 
 (def nsm {:node-spec {:image {:image-id ""}}
           :name "fred"
@@ -26,6 +27,7 @@
 (deftest env-test
   (is *node-spec-meta*)
   (is (compute-service? *compute-service*))
+  (is (string? (unique-name)))
   (testing (:name *node-spec-meta*)
     (is (= "fred" (:name *node-spec-meta*)) "something")
     (is (= 1 0) "oops"))
