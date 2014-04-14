@@ -280,7 +280,8 @@ over a sequence of node-specs.  The node-spec is available in tests as
           nsm (cond->> mns
                        (seq selectors) (filter
                                         #(matches-selectors? selectors %)))]
-      (assert service (str "No valid compute-service found for " (pr-str cs)))
+      (when-not service
+        (println "Warning: No valid compute-service found for " (pr-str cs)))
       (assert (every? :selector mns)
               "Every mns must have a selector")
       (assert (every? :selector nsm)
