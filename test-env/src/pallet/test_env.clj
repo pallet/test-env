@@ -261,7 +261,9 @@ over a sequence of node-specs.  The node-spec is available in tests as
   (assert (map? project-map) "project-map not specified as a map")
   (let [config (and project-map (config-from-project project-map))
         test-specs (:test-specs config)]
-    (assert (map? config)
+    (when-not config
+      (println "Warning: no :pallet/test-env configuration found"))
+    (assert (or (nil? config) (map? config))
             "Must have a :pallet/test-env configuration")
     (assert (every? :selector test-specs)
             "Every test-spec must have a selector")
@@ -278,7 +280,8 @@ over a sequence of node-specs.  The node-spec is available in tests as
           nsm (cond->> mns
                        (seq selectors) (filter
                                         #(matches-selectors? selectors %)))]
-      (assert service (str "No valid compute-service found for " (pr-str cs)))
+      (when-not service
+        (println "Warning: No valid compute-service found for " (pr-str cs)))
       (assert (every? :selector mns)
               "Every mns must have a selector")
       (assert (every? :selector nsm)
