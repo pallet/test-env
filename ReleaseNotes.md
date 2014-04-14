@@ -1,7 +1,17 @@
+## 0.1.6
+
+- Only warn on nil service
+  This is to allow running non :support tests with a :pallet/test-env
+  configuration.
+
+- Only warn on empty :pallet/test-env
+  This is to allow running non :support tests with a :pallet/test-env
+  configuration.
+
 ## 0.1.5
 
 - Add with-group-spec macro to cut test boilerplate
-  The with-group-spec macro wraps a test that requires the specified 
+  The with-group-spec macro wraps a test that requires the specified
   group-spec. Node creation is put in a `startup` block and node teardown in
   a `teardown` block.  Adds exception handling to ensure teardown occurs
   correctly.
@@ -18,11 +28,11 @@
   Closes #5
 
 - Add startup form and :no-startup profile
-  The :no-startup profile can be used to control execution of any block 
+  The :no-startup profile can be used to control execution of any block
   wrapped in the startup form.
 
 - Use TEST_ENV_THREAD env var as thread count
-  When set, the TEST_ENV_THREAD specifies the number of threads to use for 
+  When set, the TEST_ENV_THREAD specifies the number of threads to use for
   testing.  Defaults to 1.
 
   Closes #4
