@@ -1,3 +1,13 @@
+## 0.1.7
+
+- Fix usage of TEST_ENV_THREAD
+
+- Check each exception in cause chain for expected?
+  When checking to see if an exception is expected, check each cause
+  exception, not just the outer exception.
+
+- Update to use pallet-aws 0.2.3
+
 ## 0.1.6
 
 - Only warn on nil service

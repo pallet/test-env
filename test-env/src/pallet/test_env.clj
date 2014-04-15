@@ -14,6 +14,7 @@ over a sequence of node-specs.  The node-spec is available in tests as
    [clojure.java.io :as io]
    [clojure.pprint :refer [pprint]]
    [clojure.set :refer [intersection]]
+   [clojure.string :refer [blank?]]
    [clojure.test :as test]
    [com.palletops.multi-test :as multi-test]
    [pallet.compute
@@ -127,11 +128,19 @@ over a sequence of node-specs.  The node-spec is available in tests as
   (multi-test/report
    (-> m add-vars remove-expected)))
 
+(defn causes
+  "Convert an exception into a sequence of exceptions, one for each
+  cause."
+  [^Throwable e]
+  (lazy-seq (cons e (if-let [e (.getCause e)] (causes e)))))
+
 (defn not-supported?
   "Predicate to test for a not-supported exception."
   [result]
-  (and (instance? clojure.lang.ExceptionInfo (:actual result))
-       (:not-supported (ex-data (:actual result)))))
+  (letfn [(unsupported? [^Throwable e]
+            (:not-supported (ex-data e)))]
+    (and (instance? clojure.lang.ExceptionInfo (:actual result))
+         (some unsupported? (causes (:actual result))))))
 
 (defn expected?
   "Check to see if a fail or error result matches an item in
@@ -279,13 +288,18 @@ over a sequence of node-specs.  The node-spec is available in tests as
           selectors (selectors config)
           nsm (cond->> mns
                        (seq selectors) (filter
-                                        #(matches-selectors? selectors %)))]
+                                        #(matches-selectors? selectors %)))
+          test-options (merge
+                        {:threads (or
+                                   (if-let [t (System/getenv "TEST_ENV_THREAD")]
+                                     (if-not (blank? t)
+                                       (Integer/parseInt t)))
+                                   1)}
+                        (dissoc options :project-map))]
       (when-not service
         (println "Warning: No valid compute-service found for " (pr-str cs)))
-      (assert (every? :selector mns)
-              "Every mns must have a selector")
-      (assert (every? :selector nsm)
-              "Every mns must have a selector")
+      (assert (every? :selector mns) "Every mns must have a selector")
+      (assert (every? :selector nsm) "Every nsm must have a selector")
       (when (seq selectors)
         (let [f (io/file output-file)]
           (when (.exists f)
@@ -298,7 +312,7 @@ over a sequence of node-specs.  The node-spec is available in tests as
                           {#'*compute-service* cs #'*node-spec-meta* nsm})
                         (repeat service) nsm)
              :reporter report}
-            (dissoc options :project-map)))
+            test-options))
           (cond->           ; only write output if not using selectors
            (not (seq selectors)) (output-results
                                   (unmatched-node-specs nsms mns)
@@ -308,8 +322,7 @@ over a sequence of node-specs.  The node-spec is available in tests as
   [node-spec-metas project-map options]
   `(defn ~'test-ns-hook []
      (test-ns-with-env
-      '~(ns-name *ns*) ~node-spec-metas ~project-map
-      (merge {:thread (or (System/getenv "TEST_ENV_THREAD") 1)} ~options))))
+      '~(ns-name *ns*) ~node-spec-metas ~project-map ~options)))
 
 (defmacro test-env
   "Declare a test environment for clojure.test tests.

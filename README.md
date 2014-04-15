@@ -14,7 +14,7 @@ Writes results to `test-results.edn`.
 In your `:dev` profile, add dependencies on:
 
 ```clj
-[com.palletops/pallet-test-env "0.1.6"]
+[com.palletops/pallet-test-env "0.1.7"]
 ```
 
 Add the plugin to your `:plugins`.  The plugin provides several
@@ -22,7 +22,7 @@ profiles for different providers.  You can list the profiles with
 `lein test-env`.
 
 ```clj
-[com.palletops/lein-test-env "0.1.6"]
+[com.palletops/lein-test-env "0.1.7"]
 ```
 
 The environment uses `project.clj` for configuration, so we need to
@@ -71,8 +71,9 @@ In each of these profiles add a `:pallet/test-env` configuration map:
                                 :expected? :not-supported}]}]}
 ```
 
-Each feature that isn't supported should throw a :not-supported
-exception, which can be declared as expected.
+Each feature that isn't supported should throw an `ex-info` exception
+with `:not-supported true` on its data, which can be declared as
+expected.
 
 
 ## Running Tests

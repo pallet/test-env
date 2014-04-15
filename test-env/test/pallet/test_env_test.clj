@@ -34,4 +34,8 @@
   (testing "throws expected"
     (is (= 1 (throw (ex-info "something" {:x 1})))))
   (testing "not-supported"
-    (is (= 1 (throw (ex-info "not supported" {:not-supported true}))))))
+    (is (= 1 (throw (ex-info "not supported" {:not-supported true})))))
+  (testing "wrapped not-supported"
+    (is (= 1
+           (throw (ex-info "some wrapper" {}
+                           (ex-info "not supported" {:not-supported true})))))))
