@@ -71,8 +71,9 @@ In each of these profiles add a `:pallet/test-env` configuration map:
                                 :expected? :not-supported}]}]}
 ```
 
-Each feature that isn't supported should throw a :not-supported
-exception, which can be declared as expected.
+Each feature that isn't supported should throw an `ex-info` exception
+with `:not-supported true` on its data, which can be declared as
+expected.
 
 
 ## Running Tests
