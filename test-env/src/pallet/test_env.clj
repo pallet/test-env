@@ -382,11 +382,10 @@ over a sequence of node-specs.  The node-spec is available in tests as
                         (merge {:count 1} spec#)
                         :phase [:bootstrap]
                         :compute *compute-service*)]
-          (clojure.test/testing "bootstrap"
-            (clojure.test/is
-             session#)
-            (clojure.test/is
-             (not (pallet.core.api/phase-errors session#))))))
+          ;; use assert so we don't generate spurious test results
+          (assert session# "converge should not be nil")
+          (assert (not (pallet.core.api/phase-errors session#))
+                  "Errors during converge")))
        ~@body
        (catch Throwable e#
          ;; add test so teardown triggers correctly
