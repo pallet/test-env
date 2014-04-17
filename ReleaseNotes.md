@@ -1,3 +1,17 @@
+## 0.1.8
+
+- Group results in test-results.edn
+  Group results by selector and service in test-results.edn.
+
+  Closes #7
+
+- Use assert rather than is for converge results
+  Avoid generating test results for the bootstrap converge.
+
+  Closes #8
+
+- Update to lein-modules 0.2.4
+
 ## 0.1.7
 
 - Fix usage of TEST_ENV_THREAD
