@@ -2,7 +2,8 @@
        :plugins [[lein-modules "0.2.4"]]
        :modules {:subprocess false}}
  :provided {:dependencies [[com.palletops/pallet "0.8.0-RC.9"
-                            :exclusions [org.clojure/clojure]]]}
+                            :exclusions [org.clojure/clojure]]
+                           [org.clojure/clojure "1.5.1"]]}
  :no-checkouts {:checkout-deps-shares ^{:replace true} []}
  :release {:set-version {:updates [{:path "README.md"
                                     :no-snapshot true}]}}}
