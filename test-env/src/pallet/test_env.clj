@@ -80,9 +80,16 @@ over a sequence of node-specs.  The node-spec is available in tests as
                        {:type :pass}
                        v)))
                    groups)
-        ;; pass-fail (map result-with-expected pass-fail)
-        ]
-    pass-fail))
+        grouped (group-by (fn group-results [m]
+                            (select-keys m [:selector :service]))
+                          pass-fail)]
+    (map (fn final [[ss res]]
+           (reduce
+            (fn reduce-results [m [k vs]]
+              (assoc m k (map :feature vs)))
+            ss
+            (group-by :type res)))
+         grouped)))
 
 (defn longest-kw
   "Return the kw with the longest name"
