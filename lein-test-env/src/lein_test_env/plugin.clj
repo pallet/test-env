@@ -21,12 +21,28 @@
                               :exclusions [org.slf4j/slf4j-api]]
                              [org.apache.jclouds.driver/jclouds-sshj "1.7.1"]]
              :pallet/test-env {:service :test-env-jclouds}}
-   :aws {:dependencies '[[com.palletops/pallet-aws "0.2.3"]
-                         [ch.qos.logback/logback-classic "1.1.1"]
-                         [org.slf4j/jcl-over-slf4j "1.7.6"]]
-         :pallet/test-env {:service :test-env-aws}}
+   :aws-deps {:dependencies '[[com.palletops/pallet-aws "0.2.3"]
+                              [ch.qos.logback/logback-classic "1.1.1"]
+                              [org.slf4j/jcl-over-slf4j "1.7.6"]]}
+   :aws-env {:pallet/test-env {:service :test-env-aws}}
+   :aws [:aws-deps :aws-env]
    :vmfest {:dependencies '[[com.palletops/pallet-vmfest "0.4.0-alpha.1"]]
             :pallet/test-env {:service :test-env-vmfest}}
+   :docker {:dependencies '[[com.palletops/pallet-docker "0.1.1-SNAPSHOT"]]
+            :pallet/test-env {:service :test-env-docker}}
+   :aws-docker-service {:pallet/node-service
+                        {:provider :docker
+                         :host-service :test-env-aws
+                         :server-spec 'pallet.crate.docker/server-spec
+                         :server-spec-args {}
+                         :group-spec {:group-name :test-env-docker
+                                      :image {:image-id "ami-018c9568"
+                                              :os-family :ubuntu
+                                              :os-version "14.04"
+                                              :packager :apt
+                                              :login-user "ubuntu"}
+                                      :count 1}}}
+   :aws-docker [:aws-deps :docker :aws-docker-service]
    :no-teardown {:injections '[(require 'pallet.test-env)
                                (alter-var-root #'pallet.test-env/*teardown*
                                                (constantly :never))]}
