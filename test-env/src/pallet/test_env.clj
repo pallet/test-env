@@ -17,10 +17,13 @@ over a sequence of node-specs.  The node-spec is available in tests as
    [clojure.string :refer [blank?]]
    [clojure.test :as test]
    [com.palletops.multi-test :as multi-test]
+   [pallet.api :as api :refer [converge]]
+   [pallet.crate.automated-admin-user :refer [with-automated-admin-user]]
    [pallet.compute
     :refer [compute-service? instantiate-provider service-properties]]
    [pallet.configure :as configure]
-   [pallet.utils :refer [apply-map]]))
+   [pallet.repl :refer [explain-session]]
+   [pallet.utils :refer [apply-map find-var-with-require]]))
 
 
 ;;; # Dynamic vars used in configuration and test-env bindings
@@ -251,6 +254,30 @@ over a sequence of node-specs.  The node-spec is available in tests as
   [node-spec-metas matched]
   (remove (set (map #(dissoc % :expected :selector) matched)) node-spec-metas))
 
+;;; ## Docker Based on another Service
+(defn docker
+  [project-map]
+  (if-let [{:keys [group-spec host-service provider
+                   server-spec server-spec-args]}
+           (:pallet/node-service project-map)]
+    (let [host-service (configure/compute-service host-service)
+          spec (find-var-with-require server-spec)
+          group (apply-map api/group-spec (:group-name group-spec)
+                           :extends [with-automated-admin-user
+                                     (spec server-spec-args)]
+                           (dissoc group-spec :group-name))
+
+          node (or (first (api/group-nodes host-service [group]))
+                   (let [session (converge
+                                  group
+                                  :compute host-service
+                                  :os-detect false)]
+                      (first (:targets session))))]
+      ;; (explain-session session)
+      (if node
+        (instantiate-provider provider :node (:node node))))))
+
+
 ;;; ## Node Spec Meta Maps
 
 ;;; Filters node-spec-meta maps.
@@ -285,7 +312,11 @@ over a sequence of node-specs.  The node-spec is available in tests as
             "Every test-spec must have a selector")
     (let [cs (compute-service config)
           service (cond
-                   (keyword? cs) (configure/compute-service cs)
+                   (keyword? cs) (try (configure/compute-service cs)
+                                      (catch Exception e
+                                        (if-let [s (docker project-map)]
+                                          s
+                                          (throw e))))
                    (map? cs) (apply-map instantiate-provider
                                         (:provider cs) (dissoc cs :provider))
                    :else cs)
@@ -391,8 +422,9 @@ over a sequence of node-specs.  The node-spec is available in tests as
                         :compute *compute-service*)]
           ;; use assert so we don't generate spurious test results
           (assert session# "converge should not be nil")
-          (assert (not (pallet.core.api/phase-errors session#))
-                  "Errors during converge")))
+          (when-let [e# (pallet.core.api/phase-errors session#)]
+            (explain-session session#)
+            (assert (not e#) "Errors during converge"))))
        ~@body
        (catch Throwable e#
          ;; add test so teardown triggers correctly
